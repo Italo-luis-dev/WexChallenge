@@ -1,0 +1,9 @@
+com\italoluisdev\gatewayproduct\controllers\PurchaseTransactionController.class
+com\italoluisdev\gatewayproduct\entities\PurchaseTransaction.class
+com\italoluisdev\gatewayproduct\services\interfaces\iPurchaseTransactionService.class
+com\italoluisdev\gatewayproduct\DTOs\PurchaseTransactionRetrieveDTO.class
+com\italoluisdev\gatewayproduct\services\implementations\PurchaseTransactionService.class
+com\italoluisdev\gatewayproduct\mappers\PurchaseTransactionMapper.class
+com\italoluisdev\gatewayproduct\repositories\PurchaseTransactionRepository.class
+com\italoluisdev\gatewayproduct\DTOs\PurchaseTransactionCreationDTO.class
+com\italoluisdev\gatewayproduct\GatewayProductApplication.class
