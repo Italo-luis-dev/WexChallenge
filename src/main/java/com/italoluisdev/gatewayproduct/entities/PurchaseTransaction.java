@@ -14,7 +14,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class PurchaseTransaction {
 
-    public PurchaseTransaction(String description, String transactionDate, double purchaseAmount, UUID uuid) {
+    public PurchaseTransaction(String description, String transactionDate, double purchaseAmount, String uuid) {
         this.description = description;
         this.transactionDate = transactionDate;
         this.purchaseAmount = purchaseAmount;
@@ -34,6 +34,6 @@ public class PurchaseTransaction {
     @Column(name = "purchaseAmount")
     private double purchaseAmount;
 
-    @Column(name = "UUID")
-    private UUID identifier;
+    @Column(name = "identifier")
+    private String identifier;
 }
