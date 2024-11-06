@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.Arrays;
 
@@ -110,15 +111,15 @@ public class PurchaseTransactionControllerTest {
         when(purchaseTransactionService.getPurchaseTransactionByIdentifier(transaction.getIdentifier())).thenReturn(transaction);
         when(purchaseTransactionService.getSpecifiedCurrency("USA", "USD", transaction.getTransactionDate())).thenReturn(exchange);
 
-        ConvertedPurchaseTransactionRetrieveDTO response = purchaseTransactionController.retrievePurchaseTransaction(
+        ResponseEntity<ConvertedPurchaseTransactionRetrieveDTO> response = purchaseTransactionController.retrievePurchaseTransaction(
                 transaction.getIdentifier(), "USA", "USD");
 
         assertThat(response).isNotNull();
-        assertThat(response.getIdentifier()).isEqualTo(transaction.getIdentifier());
-        assertThat(response.getDescription()).isEqualTo(transaction.getDescription());
-        assertThat(response.getCountry_currency_desc()).isEqualTo(exchange.getCountry_currency_desc());
-        assertThat(response.getExchange_rate()).isEqualTo(exchange.getExchange_rate());
-        assertThat(response.getConvertedPurchaseAmount()).isEqualTo(120.0); // 100 * 1.2
+        assertThat(Objects.requireNonNull(response.getBody()).getIdentifier()).isEqualTo(transaction.getIdentifier());
+        assertThat(response.getBody().getDescription()).isEqualTo(transaction.getDescription());
+        assertThat(response.getBody().getCountry_currency_desc()).isEqualTo(exchange.getCountry_currency_desc());
+        assertThat(response.getBody().getExchange_rate()).isEqualTo(exchange.getExchange_rate());
+        assertThat(response.getBody().getConvertedPurchaseAmount()).isEqualTo(120.0); // 100 * 1.2
     }
 
     // Método auxiliar para converter objetos em JSON
