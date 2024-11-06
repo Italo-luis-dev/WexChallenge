@@ -25,7 +25,7 @@ public class PurchaseTransaction {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @Column(name = "description")
+    @Column(name = "description", length = 50)
     private String description;
 
     @Column(name = "transactionDate")

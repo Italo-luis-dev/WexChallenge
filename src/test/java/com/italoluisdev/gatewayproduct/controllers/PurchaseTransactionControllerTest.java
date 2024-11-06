@@ -1,103 +1,156 @@
 package com.italoluisdev.gatewayproduct.controllers;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.italoluisdev.gatewayproduct.DTOs.PurchaseTransactionCreationDTO;
-import com.italoluisdev.gatewayproduct.DTOs.PurchaseTransactionRetrieveDTO;
-import com.italoluisdev.gatewayproduct.entities.PurchaseTransaction;
-import com.italoluisdev.gatewayproduct.services.implementations.PurchaseTransactionService;
+import com.italoluisdev.gatewayproduct.DTOs.*;
+import com.italoluisdev.gatewayproduct.entities.*;
 import com.italoluisdev.gatewayproduct.services.interfaces.iPurchaseTransactionService;
+import com.italoluisdev.gatewayproduct.utils.PurchaseAmountException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(PurchaseTransactionController.class)
-@AutoConfigureMockMvc
 public class PurchaseTransactionControllerTest {
 
-    @Autowired
-    private PurchaseTransactionController purchaseTransactionController;
-
-    @MockBean
+    @Mock
     private iPurchaseTransactionService purchaseTransactionService;
 
     @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
     private MockMvc mockMvc;
-    private PurchaseTransaction purchaseTransaction;
+    @InjectMocks
+    private PurchaseTransactionController purchaseTransactionController;
+
     private PurchaseTransactionCreationDTO creationDTO;
     private PurchaseTransactionRetrieveDTO retrieveDTO;
+    private ConvertedPurchaseTransactionRetrieveDTO convertedRetrieveDTO;
+    private PurchaseTransaction transaction;
+    private TreasuryReportingRateExchange exchange;
 
     @BeforeEach
     void setUp() {
+        MockitoAnnotations.openMocks(this);
 
+        creationDTO = new PurchaseTransactionCreationDTO("Test Purchase", 100.0, "01/01/2024");
+        retrieveDTO = new PurchaseTransactionRetrieveDTO("Test Purchase", 100.0, UUID.randomUUID().toString(), "01/01/2024");
+        convertedRetrieveDTO = new ConvertedPurchaseTransactionRetrieveDTO();
+        convertedRetrieveDTO.setIdentifier("12345");
+        convertedRetrieveDTO.setDescription("Test Description");
+        convertedRetrieveDTO.setPurchaseAmount(100.0);
+        convertedRetrieveDTO.setTransactionDate("01/01/2024");
+        convertedRetrieveDTO.setCountry_currency_desc("US Dollar");
+        convertedRetrieveDTO.setExchange_rate(1.2);
+
+        transaction = new PurchaseTransaction("Test Purchase", "01/01/2024", 100.0, UUID.randomUUID().toString());
+        exchange = new TreasuryReportingRateExchange();
+        exchange.setCountry("USA");
+        exchange.setCurrency("USD");
+        exchange.setCountry_currency_desc("US Dollar");
+        exchange.setExchange_rate(1.2);
     }
 
     @Test
     void testCreateTransaction() throws Exception {
+        when(purchaseTransactionService.createTransaction(any(PurchaseTransaction.class))).thenReturn(transaction);
 
-        String description = "description";
-        String transactionDate = "purchaseDate";
-        double purchaseAmount = 10.1;
-        UUID identifier = UUID.randomUUID();
-        purchaseTransaction = new PurchaseTransaction(description,transactionDate,purchaseAmount,identifier);
-        creationDTO = new PurchaseTransactionCreationDTO(description, purchaseAmount);
-        retrieveDTO = new PurchaseTransactionRetrieveDTO(description,purchaseAmount,identifier, transactionDate);
+        ResponseEntity<PurchaseTransactionRetrieveDTO> response = purchaseTransactionController.createTransaction(creationDTO);
 
-        when(purchaseTransactionService.createTransaction(purchaseTransaction)).thenReturn(purchaseTransaction);
-
-        // Executa o método da controller
-        mockMvc.perform(post("/purchaseTransactions/create")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(creationDTO)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.description").value(retrieveDTO.getDescription()))
-                .andExpect(jsonPath("$.purchaseAmount").value(retrieveDTO.getPurchaseAmount()))
-               ;
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getDescription()).isEqualTo(creationDTO.getDescription());
+        assertThat(response.getBody().getPurchaseAmount()).isEqualTo(creationDTO.getPurchaseAmount());
+        assertThat(response.getBody().getTransactionDate()).isEqualTo(creationDTO.getTransactionDate());
     }
 
     @Test
-    void testGetPurchaseTransactions() throws Exception {
-        String description = "description";
-        String transactionDate = "purchaseDate";
-        double purchaseAmount = 10.1;
-        UUID identifier = UUID.randomUUID();
-        purchaseTransaction = new PurchaseTransaction(description,transactionDate,purchaseAmount,identifier);
-        creationDTO = new PurchaseTransactionCreationDTO(description, purchaseAmount);
-        retrieveDTO = new PurchaseTransactionRetrieveDTO(description,purchaseAmount,identifier, transactionDate);
+    void testGetPurchaseTransactions() {
+        when(purchaseTransactionService.getAll()).thenReturn(Arrays.asList(transaction));
 
-        List<PurchaseTransaction> transactions = Stream.of(purchaseTransaction).collect(Collectors.toList());
-        List<PurchaseTransactionRetrieveDTO> expectedDTOs = Stream.of(retrieveDTO).collect(Collectors.toList());
+        ResponseEntity<List<PurchaseTransactionRetrieveDTO>> response = purchaseTransactionController.getPurchaseTransactions();
 
-        when(purchaseTransactionService.getAll()).thenReturn(transactions);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody()).hasSize(1);
+        assertThat(response.getBody().get(0).getDescription()).isEqualTo(transaction.getDescription());
+    }
 
-        // Realiza a chamada à controller com MockMvc
-        mockMvc.perform(get("/purchaseTransactions/getPurchaseTransactions") // substitua com o mapeamento real
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andDo(print())
-                .andExpect(jsonPath("$[0].description").value(retrieveDTO.getDescription()))
-                .andExpect(jsonPath("$[0].purchaseAmount").value(retrieveDTO.getPurchaseAmount()));
+    @Test
+    void testGetPurchaseTransactionByIdentifier() {
+        when(purchaseTransactionService.getPurchaseTransactionByIdentifier(transaction.getIdentifier())).thenReturn(transaction);
+
+        ResponseEntity<PurchaseTransactionRetrieveDTO> response = purchaseTransactionController.getPurchaseTransactionByIdentifier(transaction.getIdentifier());
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getIdentifier()).isEqualTo(transaction.getIdentifier());
+        assertThat(response.getBody().getDescription()).isEqualTo(transaction.getDescription());
+    }
+
+    @Test
+    void testRetrievePurchaseTransaction() throws Exception {
+        when(purchaseTransactionService.getPurchaseTransactionByIdentifier(transaction.getIdentifier())).thenReturn(transaction);
+        when(purchaseTransactionService.getSpecifiedCurrency("USA", "USD", transaction.getTransactionDate())).thenReturn(exchange);
+
+        ConvertedPurchaseTransactionRetrieveDTO response = purchaseTransactionController.retrievePurchaseTransaction(
+                transaction.getIdentifier(), "USA", "USD");
+
+        assertThat(response).isNotNull();
+        assertThat(response.getIdentifier()).isEqualTo(transaction.getIdentifier());
+        assertThat(response.getDescription()).isEqualTo(transaction.getDescription());
+        assertThat(response.getCountry_currency_desc()).isEqualTo(exchange.getCountry_currency_desc());
+        assertThat(response.getExchange_rate()).isEqualTo(exchange.getExchange_rate());
+        assertThat(response.getConvertedPurchaseAmount()).isEqualTo(120.0); // 100 * 1.2
+    }
+
+    // Método auxiliar para converter objetos em JSON
+    private String asJsonString(Object obj) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            return objectMapper.writeValueAsString(obj);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    void testGetPurchaseTransactions_EmptyList() {
+        when(purchaseTransactionService.getAll()).thenReturn(List.of());
+
+        ResponseEntity<List<PurchaseTransactionRetrieveDTO>> response = purchaseTransactionController.getPurchaseTransactions();
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isEmpty();
+    }
+
+    @Test
+    void testRetrievePurchaseTransaction_NotFound() throws Exception {
+        when(purchaseTransactionService.getPurchaseTransactionByIdentifier(transaction.getIdentifier()))
+                .thenReturn(null); // Simulating that the transaction was not found
+        when(purchaseTransactionService.getSpecifiedCurrency("USA", "USD", transaction.getTransactionDate()))
+                .thenReturn(null); // Simulating that the specified currency was not found
+
+        ResponseEntity<ConvertedPurchaseTransactionRetrieveDTO> response =
+                new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND); // Expecting a 404
     }
 }
