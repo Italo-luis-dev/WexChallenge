@@ -64,7 +64,7 @@ https://fiscaldata.treasury.gov/datasets/treasury-reporting-rates-exchange/treas
    mvn clean install
    
 4. **Access the Application**:
-Open your browser and go to [ http://localhost:8080](http://localhost:8081/swagger-ui/index.html#/) to check if the application is running.
+Open your browser and go to [ http://localhost:8081](http://localhost:8081/swagger-ui/index.html#/) to check if the application is running.
 
 ###  Prerequisite:
 Java 21
