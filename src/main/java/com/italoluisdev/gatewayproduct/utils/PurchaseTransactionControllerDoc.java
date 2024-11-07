@@ -61,7 +61,8 @@ public interface PurchaseTransactionControllerDoc {
                     content = { @Content(mediaType = "application/json",
                             schema = @Schema(implementation = PurchaseTransactionCreationDTO.class)) }),
             @ApiResponse(responseCode = "404", description = "Unable to recover purchase transaction",
-            content = @Content) })
+            content = @Content)})
+
     ResponseEntity<PurchaseTransactionRetrieveDTO> getPurchaseTransactionByIdentifier (
             @Parameter(description = "Purchase transaction identifier") @RequestParam String identifier);
 
@@ -80,6 +81,8 @@ public interface PurchaseTransactionControllerDoc {
                     content = { @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ConvertedPurchaseTransactionRetrieveDTO.class)) }),
             @ApiResponse(responseCode = "404", description = "Unable to recover purchase transaction",
+                    content = @Content),
+            @ApiResponse(responseCode = "409", description = "Conversion not allowed",
                     content = @Content) })
     ResponseEntity<ConvertedPurchaseTransactionRetrieveDTO> retrievePurchaseTransaction
             (@Parameter(description = "Purchase transaction identifier") @RequestParam String identifier,

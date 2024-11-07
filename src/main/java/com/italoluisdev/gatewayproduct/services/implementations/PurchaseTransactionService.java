@@ -149,14 +149,14 @@ public class PurchaseTransactionService implements iPurchaseTransactionService {
                 .toUri();
     }
 
-    private static TreasuryReportingRateExchange getTRREByCountryCurrency(String country, String currency) throws IOException {
+    private static TreasuryReportingRateExchange getTRREByCountryCurrency(String country, String currency) throws IOException, ConversionNotAllowedException {
         TypeReference<List<TreasuryReportingRateExchange>> typeReference = new TypeReference<List<TreasuryReportingRateExchange>>() {};
         ObjectMapper objectMapper = new ObjectMapper();
         List<TreasuryReportingRateExchange> treasuryReportingRateExchangeList = objectMapper.readValue(allCountriesCurrencyDescJson, typeReference);
         return treasuryReportingRateExchangeList.stream()
                 .filter(obj -> obj.getCountry().toUpperCase().equals(country.toUpperCase()))
                 .filter(o -> o.getCurrency().toUpperCase().equals(currency.toUpperCase()))
-                .findFirst().orElseThrow();
+                .findFirst().orElseThrow(ConversionNotAllowedException::new);
     }
 
     public static String capitalizeFirstLetter(String input) {
