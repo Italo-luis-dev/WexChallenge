@@ -51,9 +51,8 @@ https://fiscaldata.treasury.gov/datasets/treasury-reporting-rates-exchange/treas
    - Navigate to the directory where you want to clone the project.
    - Use the following Git command to clone the repository:
      ```bash
-     git clone https://github.com/your-username/your-repository-name.git
+     git clone [https://github.com/italo-adaptodev/wexchallenge](https://github.com/italo-adaptodev/wexchallenge)
      ```
-     Replace `your-username` and `your-repository-name` with the correct GitHub username and repository name.
 
 2. **Ensure Prerequisites**:  
    - Make sure you have **Java** (JDK 21 or higher) installed. You can check your Java version with:  
