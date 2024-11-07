@@ -3,8 +3,7 @@ package com.italoluisdev.gatewayproduct.services.interfaces;
 import com.italoluisdev.gatewayproduct.DTOs.ConvertedPurchaseTransactionRetrieveDTO;
 import com.italoluisdev.gatewayproduct.entities.TreasuryReportingRateExchange;
 import com.italoluisdev.gatewayproduct.entities.PurchaseTransaction;
-import com.italoluisdev.gatewayproduct.utils.ConversionNotAllowedException;
-import com.italoluisdev.gatewayproduct.utils.PurchaseAmountException;
+import com.italoluisdev.gatewayproduct.utils.exceptions.ConversionNotAllowedException;
 
 import java.io.IOException;
 import java.time.DateTimeException;

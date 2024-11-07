@@ -4,6 +4,7 @@ package com.italoluisdev.gatewayproduct.utils;
 import com.italoluisdev.gatewayproduct.DTOs.ConvertedPurchaseTransactionRetrieveDTO;
 import com.italoluisdev.gatewayproduct.DTOs.PurchaseTransactionCreationDTO;
 import com.italoluisdev.gatewayproduct.DTOs.PurchaseTransactionRetrieveDTO;
+import com.italoluisdev.gatewayproduct.utils.exceptions.ConversionNotAllowedException;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
