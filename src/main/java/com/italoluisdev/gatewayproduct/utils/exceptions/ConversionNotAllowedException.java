@@ -1,4 +1,4 @@
-package com.italoluisdev.gatewayproduct.utils;
+package com.italoluisdev.gatewayproduct.utils.exceptions;
 
 public class ConversionNotAllowedException extends Exception{
 
