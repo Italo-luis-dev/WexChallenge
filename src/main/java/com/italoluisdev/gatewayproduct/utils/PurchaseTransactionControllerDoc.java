@@ -78,7 +78,7 @@ public interface PurchaseTransactionControllerDoc {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Purchase transaction retrieved successfully",
                     content = { @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = PurchaseTransactionCreationDTO.class)) }),
+                            schema = @Schema(implementation = ConvertedPurchaseTransactionRetrieveDTO.class)) }),
             @ApiResponse(responseCode = "404", description = "Unable to recover purchase transaction",
                     content = @Content) })
     ResponseEntity<ConvertedPurchaseTransactionRetrieveDTO> retrievePurchaseTransaction
