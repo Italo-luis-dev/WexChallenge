@@ -14,11 +14,14 @@ public interface PurchaseTransactionMapper {
 
     PurchaseTransactionMapper INSTANCE = Mappers.getMapper(PurchaseTransactionMapper.class);
 
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "identifier", ignore = true)
     PurchaseTransaction toModel(PurchaseTransactionCreationDTO dto);
 
     PurchaseTransactionRetrieveDTO toPurchaseTransactionRetrieveDto(PurchaseTransaction purchaseTransaction);
 
 
+    @Mapping(target = "convertedPurchaseAmount", ignore = true)
     ConvertedPurchaseTransactionRetrieveDTO toConvertedPurchaseTransactionRetrieveDTO
             (PurchaseTransaction purchaseTransaction, TreasuryReportingRateExchange treasuryReportingRateExchange);
 
