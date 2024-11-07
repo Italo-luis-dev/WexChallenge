@@ -43,6 +43,29 @@ https://fiscaldata.treasury.gov/datasets/treasury-reporting-rates-exchange/treas
 # Usage
 [(Back to top)](#table-of-contents)
 
+### How to Run a Spring Boot Application with Maven
+
+1. **Ensure Prerequisites**:  
+   - Make sure you have **Java** (JDK 21 or higher) installed. You can check your Java version with:  
+     ```bash
+     java -version
+     ```
+   - Ensure **Maven** is installed on your system. Verify with:  
+     ```bash
+     mvn -version
+     ```
+
+2. **Navigate to Your Project**:  
+   In your terminal, go to the root directory of your Spring Boot project where the `pom.xml` file is located.
+
+3. **Build the Project**:  
+   Before running the application, you need to build the project. Use the following Maven command to compile and package the application:
+   ```bash
+   mvn clean install
+   
+4. **Access the Application**:
+Open your browser and go to [ http://localhost:8080](http://localhost:8081/swagger-ui/index.html#/) to check if the application is running.
+
 ###  Prerequisite:
 Java 21
 
