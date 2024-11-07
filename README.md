@@ -71,8 +71,13 @@ https://fiscaldata.treasury.gov/datasets/treasury-reporting-rates-exchange/treas
    Before running the application, you need to build the project. Use the following Maven command to compile and package the application:
    ```bash
    mvn clean install
+   ```
+   Run the application
+   ```bash
+   mvn spring-boot:run
+   ```
    
-5. **Access the Application**:
+6. **Access the Application**:
 Open your browser and go to [ http://localhost:8081](http://localhost:8081/swagger-ui/index.html#/) to check if the application is running.
 
 ###  Prerequisite:
